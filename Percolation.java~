@@ -1,0 +1,128 @@
+import edu.princeton.cs.algs4.StdRandom;
+import edu.princeton.cs.algs4.StdStats;
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+import java.lang.IllegalArgumentException;
+
+public class Percolation {
+ private int n;
+   private int openSites;
+   private int[] grid;
+   private int[] size;
+   private int topRoot;
+   private int bottomRoot;
+   
+   public Percolation (int n){
+     this.n = n;
+     this.openSites = 0;
+     
+     this.topRoot = n*n;
+     this.bottomRoot = 1+(n*n);
+     
+     this.grid = new int[bottomRoot];
+     
+     grid[topRoot] = topRoot;
+     size[topRoot] = n+1;
+     
+     grid[bottomRoot] = bottomRoot;
+     size[bottomRoot] = n+1;
+    
+     for (int i = 0; i<(n*n); i++){
+       grid[i] = -1;
+       size[i] = 1;
+     }
+     
+   }
+   
+   public void open(int row, int col){
+     if(row<1||col<1||row>n||col>n){
+       throw new IllegalArgumentException();
+     }
+     int gridNumber = n*(row-1) + col-1;
+     
+     if(gridNumber<n){
+       union(gridNumber, topRoot);
+     }
+     if(gridNumber>(n-1)*n){
+       union(gridNumber, bottomRoot);
+     }
+     if(gridNumber<(n-1)*n){
+       if(this.grid[gridNumber+n]>=0){
+         union(gridNumber, gridNumber+n);
+       }
+     }
+     if(gridNumber>n-1){
+       if(this.grid[gridNumber-n]>=0){
+         union(gridNumber, gridNumber-n);
+       }
+     }
+     if(gridNumber%n!=n-1){
+       if(this.grid[gridNumber+1]>=0){
+         union(gridNumber, gridNumber+1);
+       }
+     }
+     if(gridNumber%n!=0){
+       if(this.grid[gridNumber-1]>=0){
+         union(gridNumber, gridNumber-1);
+       }
+     }
+     openSites +=1;
+   }
+   
+   public int root(int i){
+     while(i!=this.grid[i]){
+       if(grid[i]>-1){
+         i=this.grid[i];
+       }
+       else{
+         break;
+       }
+     }
+     return i;
+   }
+   
+   public void union(int a, int b){
+     if(connected(a, b)){
+       return;
+     }
+     if(this.size[b]>this.size[a]){
+       this.grid[root(a)] = root(b);
+       this.size[b] += this.size[a];
+     }
+     else{
+       this.grid[root(b)] = root(a);
+       this.size[a] += this.size[b];
+     }
+   }
+   
+   public boolean connected(int a, int b){
+     return root(a)==root(b);
+   }
+   
+   public boolean isOpen(int row, int col){
+     if(row<1||col<1||row>n||col>n){
+       throw new IllegalArgumentException();
+     }
+     int gridNumber = (row-1)*n + col-1;
+     return grid[gridNumber]>=0;
+   }
+   
+   public boolean isFull(int row, int col){
+     if(row<1||col<1||row>n||col>n){
+       throw new IllegalArgumentException();
+     }
+     int gridNumber = (row-1)*n + col-1;
+     return connected(gridNumber, topRoot);
+   }
+   
+   public int numberOfOpenSites(){
+     return openSites;
+   }
+   
+   public boolean percolates(){
+     return (root(bottomRoot)==root(topRoot));
+   }
+   
+   public static void main (String[] args){
+   }
+ }
+  

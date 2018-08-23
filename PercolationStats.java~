@@ -1,0 +1,19 @@
+public class PercolationStats {
+  public PercolationStats(int n, int trials){
+    for (int i=0; i<trials; i++){
+    }
+  }
+  
+  public double mean(){
+  }
+  
+  public double stddev(){
+  }
+  
+  public confidenceLo(){
+  }
+  
+  public confidenceHi(){
+  }
+  
+}
